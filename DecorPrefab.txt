@@ -1,0 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+
+
+public class DecorPrefab : MonoBehaviour
+{
+    public GameObject[] listaObjetos;
+    public GameObject parent;
+}
+ //este script serviu para fazer conexão com o editor ( DecorPrefab_editor)

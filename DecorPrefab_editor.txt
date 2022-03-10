@@ -1,0 +1,71 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+[CustomEditor(typeof(DecorPrefab))]
+[ExecuteInEditMode]
+public class DecorPrefab_Editor : Editor // só aparece no editor
+{
+    DecorPrefab decoracao;
+    SerializedProperty listaPrefabs;
+    bool instanciar = true;
+    RaycastHit hit;
+
+    private void OnEnable()
+
+    {
+        decoracao = (DecorPrefab)target; // target = objeto a inspecionar
+
+        listaPrefabs = serializedObject.FindProperty("listaObjetos"); // procura uma propriedade no DecorPrefab com o nome listaObjetos
+    }
+    public override void OnInspectorGUI() // custom editor, interface do script, criação de interface por comandos
+    {
+        EditorGUI.BeginChangeCheck();// verifica se alguma propriedade muda
+        EditorGUILayout.PropertyField(listaPrefabs, true);// true por ser um array e não dar problemas
+        if (EditorGUI.EndChangeCheck())
+        {
+            serializedObject.ApplyModifiedProperties();//vai ao array e guarda as alterações
+        }
+        // permite objetos do gameobject parent
+        decoracao.parent = (GameObject)EditorGUILayout.ObjectField("Parent:", decoracao.parent, typeof(GameObject), true);
+    }
+    private void OnSceneGUI()// é um método que permite que consigámos aceder/editar na scene do jogo 
+    {
+        Vector2 mousePos = Event.current.mousePosition;// método que ao clicar no shift no local do mouse, cria neste caso uma árvore
+        if (Event.current.shift)
+        {
+            if (instanciar)
+            {//instancia o objeto
+                instanciar = !instanciar;
+                if (Physics.Raycast(DarRay(mousePos), out hit))
+                {//ao estanciar define o objeto com a seguinte escala
+                    GameObject go = Instantiate(decoracao.listaObjetos[Random.Range(0, decoracao.listaObjetos.Length)], hit.point, Quaternion.identity);//Quaternion - rotação, hit- posição
+                    go.transform.Rotate(new Vector3(0f, Random.Range(0f, 360f), 0f));
+                    float escala = Random.Range(0.8f, 1.3f);
+                    go.transform.localScale = new Vector3(escala, escala, escala);
+
+                    if (decoracao.parent != null)
+                    {
+                        go.transform.parent = decoracao.parent.transform;
+                    }
+
+                }
+            }
+
+        }
+        else
+        {
+            instanciar = true;
+        }
+    }
+
+
+
+    Ray DarRay(Vector2 pos)// método para converter de ponto 2d para ponto no mundo(a partir da câmera, cria um raio, que vai até à posição do mouse )
+    {
+        Ray ray = HandleUtility.GUIPointToWorldRay(pos);
+        return ray;
+    }
+
+}

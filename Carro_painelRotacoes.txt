@@ -1,0 +1,45 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Carro_painelRotacoes : MonoBehaviour
+{
+    Carro carro;
+    public RectTransform ponteiroRPM;
+    public Text veloKMH;
+    public Text posicao;
+    public Text volta;
+    float newR;
+    private void Start()
+    {
+        carro = GetComponent<Carro>();
+    }
+
+    private void FixedUpdate()
+    {
+        
+        veloKMH.text = string.Format("{0:0}", carro.veloKMH) +"KM/H";// mostra o valor da velocidade com 0 casas decimais
+
+        Vector3 rotPonteiro = ponteiroRPM.rotation.eulerAngles;
+
+        
+        newR = Mathf.Lerp(newR, carro.rpm, 0.3f);// serve para adequar a velocidade da agulha, torna-a mais suave
+
+        rotPonteiro.z = ((newR * 180f) / carro.maxRpm) * -1f;
+        // 180 - rotação  multiplica-se por -1  para retomar ao número negativo(diminui a rotação na próxima mudança)
+
+        
+        ponteiroRPM.eulerAngles = rotPonteiro;// eulerAngles - representa as rotações das 3 posições, x,y e z
+
+       
+    
+    }
+    
+
+
+
+
+
+}
+

@@ -1,0 +1,134 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System;
+
+//root Carro1
+public class Carro : MonoBehaviour
+{
+    public WheelCollider[] guiar;
+   // RodaGestor[] rodasGuiar;//
+    float gui = 0f;
+    float acc = 0f;
+    Rigidbody rb;
+    public AnimationCurve curvaRodas;
+    public AudioClip somCarro;
+    public AudioSource audioCarro;
+    public float maxTorque;
+    public float forcaTravagem;
+    public float rpm;
+    public float veloKMH;
+    public float[] passaMudancas;
+    int mudancaAtual = 0;
+    public float maxRpm;
+    public float minRpm;
+    public float somPitch;
+    public float instabTravar;
+    public Vector3 finalForca;
+     
+   
+    
+
+
+
+
+
+
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+
+        
+        audioCarro.clip = somCarro;
+
+       /* rodasGuiar = new RodaGestor[guiar.Length];
+        for (int i = 0; i < guiar.Length; i++)
+        {
+            rodasGuiar[i] = guiar[i].GetComponent<RodaGestor>();
+        }*/
+
+    }
+
+    void Update()
+    {
+        gui = Input.GetAxis("Horizontal");
+
+        acc = Input.GetAxis("Vertical");
+
+    }
+
+   
+
+
+
+
+
+        void FixedUpdate() 
+        {  //guiar
+            for (int i = 0; i < guiar.Length; i++)
+            //a esta velocidade é nos dado um valor da curva que será multiplicado pelo input(gui)
+            {
+                guiar[i].steerAngle = gui * curvaRodas.Evaluate(veloKMH);
+                guiar[i].motorTorque = 200f;
+               /* // se não der 0, uma delas está na erva
+                if (rodasGuiar[i].rodaEstrada != 0)
+                {
+                    rb.AddTorque((transform.up * (instabTravar / 1.5f) / 45f) * gui);
+                }
+               */
+
+            }
+            //velocidade e rpm
+
+            veloKMH = rb.velocity.magnitude * 1.5f;
+            rpm = veloKMH * passaMudancas[mudancaAtual] * 15f;
+
+            //mudanças
+            if (rpm > maxRpm) //quando a mudança é maior que maxRpm, o carro passa para a prox mudança
+            {
+                mudancaAtual++;
+                if (mudancaAtual == passaMudancas.Length)
+                {
+                    mudancaAtual--; // não deixa passar da quinta mundança, volta novamente à quarta
+                }
+
+
+            }
+            if (rpm < minRpm) // n deixa diminuir o minRpm
+            {
+                mudancaAtual--;
+                if (mudancaAtual < 0)
+                {
+                    mudancaAtual = 0;
+                }
+            }
+
+            //forças
+
+            if (acc < -5.5f)
+            {
+                rb.AddForce(-transform.forward * forcaTravagem);
+                rb.AddTorque((transform.up * instabTravar * veloKMH / 45f) * gui);
+                acc = 0;
+            }
+            finalForca = transform.forward * (maxTorque / (mudancaAtual + 1) + maxTorque / 1.85f) * acc;
+            rb.AddForce(finalForca);
+
+            // som
+            audioCarro.pitch = rpm / somPitch;
+        }
+         /* void OnGUI() // aparece as rpm e a velocidade no ecra
+        {
+            GUI.Label(new Rect(20, 20, 128, 32), rpm + "RPM");
+            GUI.Label(new Rect(20, 40, 128, 32), (mudancaAtual + 1).ToString());
+            GUI.Label(new Rect(20, 60, 128, 32), veloKMH + "KM/H");
+            GUI.Label(new Rect(20, 80, 128, 32), finalForca.magnitude.ToString());
+
+
+
+        }*/
+    }
+
+
+

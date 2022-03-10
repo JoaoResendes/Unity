@@ -1,0 +1,50 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+/*public class RodaGestor : MonoBehaviour
+{
+    public WheelCollider[] tipoRodas;
+    WheelCollider wc;
+    RaycastHit hit;
+    public int rodaEstrada = 0;
+    RodaGestor[] rodasGuiar;
+
+    private void Start()
+    {
+        wc = GetComponent<WheelCollider>();
+    }
+
+
+    //classe capaz de de detetar colliders, (relvado)
+    private void FixedUpdate()
+    {
+        if (Physics.Raycast(transform.position, -transform.up, out hit, 2f))
+        {
+            if (hit.collider.tag == "Estrada")
+            {
+                if (rodaEstrada != 0)
+                {
+                    rodaEstrada = 0;
+                    wc.sidewaysFriction = tipoRodas[0].sidewaysFriction;
+                }
+
+            }
+            
+            {
+                if (hit.collider.tag == "Erva")
+                {
+                    if (rodaEstrada != 1)
+                    {
+                        rodaEstrada = 1;
+                        wc.sidewaysFriction = tipoRodas[0].sidewaysFriction;
+
+
+
+                    }
+                }
+            }
+        }
+    }
+}
+   */     
